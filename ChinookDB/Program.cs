@@ -39,7 +39,7 @@ namespace ChinookDB
             Console.WriteLine($"Welcome please choose an action"); // Adds Welcome to main Screen
             Console.WriteLine("(1) Login");
             Console.WriteLine("(2) Add customer");
-            Console.WriteLine("(X) Exit");
+            Console.WriteLine("(x) Exit");
             var buttonChar = Console.ReadKey().KeyChar;
             if (buttonChar == '1')
             {

@@ -137,26 +137,26 @@ namespace ChinookDB
             IList<Customer> customers = new List<Customer>();
             int ch;
             Console.Clear();
-            Console.WriteLine("1. Update a customer");
+            Console.WriteLine("1. Select all customers");
             Console.WriteLine("2. Select a customer");
             Console.WriteLine("3. Select a customer with invoices");
-            Console.WriteLine("4. Select all customers");
+            Console.WriteLine("1. Update a customer");
             Console.WriteLine("5. Create a new invoice");
             Console.WriteLine("6. Update a invoice");
             Console.WriteLine("7. Select an invoice");
             Console.WriteLine("8. Select a invoice with customer details");
             Console.WriteLine("9. Select all invoice");
-            Console.WriteLine("M. Main Menu");
-            Console.WriteLine("X. Exit");
+            Console.WriteLine("m. Main Menu");
+            Console.WriteLine("x. Exit");
             Console.WriteLine("Enter Your Choice:");
             ch = Convert.ToInt32(Console.ReadLine());
             switch (ch)
             {
                 case 1:
-                    UpdateCustomer();
+                    CustomerDetails();
                     break;
                 case 4:
-                    customers = CustomerDetails(); // To find the details of the Customer from the Sqlite database
+                    UpdateCustomer();
                     break;
                 //case 2:
                 //    InvoiceDetails(); // To call the InvoiceDetails function to find the Invoice Details from the sqlite database
@@ -168,13 +168,26 @@ namespace ChinookDB
         }
 
         //// Function to find the CustomerDetails from the Database
-        public static IList<Customer> CustomerDetails()
+        public static void CustomerDetails()
         {
             using (var _context = new AppDbContext())
             {
+                Console.Clear();
                 IList<Customer> customers = _context.Customers.ToList();
                 _context.Dispose(); //not sure if you need this or not, the using should dispose it automatically i would think but i'm not positive
-                return customers;
+                foreach(var customer in customers)
+                {
+                    Console.WriteLine($"Id: {customer.Id}");
+                    Console.WriteLine($"Name: {customer.FirstName} {customer.LastName}");
+                    Console.WriteLine($"Country: {customer.Country}");
+                    Console.WriteLine($"Email: {customer.Email}");
+                    Console.WriteLine();
+                    Console.WriteLine();
+                }
+                Console.WriteLine("Press any key to return to the menu");
+                var ch = Console.ReadKey().KeyChar;
+
+                AdminScreen.Show();
             }
         }
 
@@ -212,6 +225,11 @@ namespace ChinookDB
                 }
                 
             }
+        }
+
+        public static void ShowCustomer()
+        {
+
         }
     }
 
