@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChinookDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211209071114_addRelationshipBetweenCustomerAndInvoiceTables")]
-    partial class addRelationshipBetweenCustomerAndInvoiceTables
+    [Migration("20211210032256_maybe")]
+    partial class maybe
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,27 @@ namespace ChinookDB.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("ChinookDB.models.AppUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppUsers");
+                });
 
             modelBuilder.Entity("ChinookDB.models.Customer", b =>
                 {
@@ -67,25 +88,28 @@ namespace ChinookDB.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Customer_Id")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("InvoiceDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("InvoiceId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("Customer_Id");
 
                     b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("ChinookDB.models.Invoice", b =>
                 {
-                    b.HasOne("ChinookDB.models.Customer", "Customer")
+                    b.HasOne("ChinookDB.models.Customer", "Customers")
                         .WithMany("Invoices")
-                        .HasForeignKey("CustomerId")
+                        .HasForeignKey("Customer_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Customer");
+                    b.Navigation("Customers");
                 });
 
             modelBuilder.Entity("ChinookDB.models.Customer", b =>

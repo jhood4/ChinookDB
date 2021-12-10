@@ -21,7 +21,7 @@ namespace ChinookDB.Data
         //protected override void OnModelCreating(ModelBuilder builder)
         //{
         //    base.OnModelCreating(builder);
-        //    builder.Entity<AppUser>().HasData(new AppUser { Id = 1, Username = "admin", Password = "password" });
+        //    builder.Entity<Invoice>().HasOne(i => i.Invoice)
         //}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

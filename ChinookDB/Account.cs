@@ -1,5 +1,6 @@
 ﻿using ChinookDB.Data;
 using ChinookDB.models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace ChinookDB
@@ -140,14 +141,14 @@ namespace ChinookDB
             Console.WriteLine("1. Select all customers");
             Console.WriteLine("2. Select a customer");
             Console.WriteLine("3. Select a customer with invoices");
-            Console.WriteLine("1. Update a customer");
+            Console.WriteLine("4. Update a customer");
             Console.WriteLine("5. Create a new invoice");
             Console.WriteLine("6. Update a invoice");
             Console.WriteLine("7. Select an invoice");
             Console.WriteLine("8. Select a invoice with customer details");
             Console.WriteLine("9. Select all invoice");
-            Console.WriteLine("m. Main Menu");
-            Console.WriteLine("x. Exit");
+            Console.WriteLine("10. Main Menu");
+            Console.WriteLine("11. Exit");
             Console.WriteLine("Enter Your Choice:");
             ch = Convert.ToInt32(Console.ReadLine());
             switch (ch)
@@ -155,8 +156,20 @@ namespace ChinookDB
                 case 1:
                     CustomerDetails();
                     break;
+                case 2:
+                    SelectCustomerById();
+                    break;
+                case 3:
+                    SelectCustomerWithInvoices();
+                    break;
                 case 4:
                     UpdateCustomer();
+                    break;
+                case 10:
+                    Program.MainMenu();
+                    break;
+                case 11:
+                    System.Environment.Exit(-1);
                     break;
                 //case 2:
                 //    InvoiceDetails(); // To call the InvoiceDetails function to find the Invoice Details from the sqlite database
@@ -191,6 +204,83 @@ namespace ChinookDB
             }
         }
 
+        public static void SelectCustomerById()
+        {
+            Console.Clear();
+            using (var _context = new AppDbContext())
+            {
+                var customers = _context.Customers.ToList();
+                if (customers.Count > 0)
+                {
+                    foreach(var cust in customers)
+                    {
+                        Console.WriteLine($"Id: {cust.Id} | First name: {cust.FirstName} | Last name: {cust.LastName} | Country: {cust.Country} | Email: {cust.Email}");
+                    }
+
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the id of the user you would like to view");
+                    var userId = Convert.ToInt32(Console.ReadLine());
+                    Customer customer = _context.Customers.FirstOrDefault(x => x.Id == userId);
+                    Console.WriteLine($"First name: {customer.FirstName}");
+                    Console.WriteLine($"Last name: {customer.LastName}");
+                    Console.WriteLine($"Country: {customer.Country}");
+                    Console.WriteLine($"Email: {customer.Email}");
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    Console.WriteLine("Press any key to return to the menu");
+                    var ch = Console.ReadKey().KeyChar;
+
+                    AdminScreen.Show();
+                }
+            }
+        }
+
+        public static void SelectCustomerWithInvoices()
+        {
+            Console.Clear();
+            using (var _context = new AppDbContext())
+            {
+                var customers = _context.Customers.ToList();
+                if (customers.Count > 0)
+                {
+                    foreach (var cust in customers)
+                    {
+                        Console.WriteLine($"Id: {cust.Id} | First name: {cust.FirstName} | Last name: {cust.LastName} | Country: {cust.Country} | Email: {cust.Email}");
+                    }
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the id of the user you would like to view");
+                    var userId = Convert.ToInt32(Console.ReadLine());
+                    var customer = _context.Customers.Where(x => x.Id == userId).Include("Invoices").FirstOrDefault();
+                    Console.WriteLine("Customer Details");
+                    Console.WriteLine($"Customer name: {customer.FirstName} {customer.LastName}");
+                    Console.WriteLine($"Country: {customer.Country}");
+                    Console.WriteLine($"Email: {customer.Email}");
+                    Console.WriteLine();
+                    Console.WriteLine("Invoice Details");
+                    foreach(var invoice in customer.Invoices)
+                    {
+                        Console.WriteLine($"Invoice Id: {invoice.InvoiceId}");
+                        Console.WriteLine($"Invoice Date: {invoice.InvoiceDate}");
+                        Console.WriteLine($"Amount: {invoice.Amount}");
+                    }
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    Console.WriteLine("Press any key to return to the menu");
+                    var ch = Console.ReadKey().KeyChar;
+
+                    AdminScreen.Show();
+                }
+            }
+        }
+
         public static void UpdateCustomer()
         {
             Console.Clear();
@@ -201,7 +291,7 @@ namespace ChinookDB
                 {
                     foreach(var cust in customers)
                     {
-                        Console.WriteLine($"Id: {cust.Id} | First name: {cust.FirstName} | Last name: {cust.LastName} | Country: {cust.Country} | Email: {cust.Email}");
+                        Console.WriteLine($"Id: {cust.Id} | First name: {cust.FirstName} | Last name: {cust.LastName}");
                     }
 
                     Console.WriteLine();

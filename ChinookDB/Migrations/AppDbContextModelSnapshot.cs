@@ -86,12 +86,33 @@ namespace ChinookDB.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Customer_Id")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("InvoiceDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("InvoiceId");
 
+                    b.HasIndex("Customer_Id");
+
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("ChinookDB.models.Invoice", b =>
+                {
+                    b.HasOne("ChinookDB.models.Customer", "Customers")
+                        .WithMany("Invoices")
+                        .HasForeignKey("Customer_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customers");
+                });
+
+            modelBuilder.Entity("ChinookDB.models.Customer", b =>
+                {
+                    b.Navigation("Invoices");
                 });
 #pragma warning restore 612, 618
         }

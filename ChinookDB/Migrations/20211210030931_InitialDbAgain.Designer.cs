@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChinookDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211209054024_initialMigration")]
-    partial class initialMigration
+    [Migration("20211210030931_InitialDbAgain")]
+    partial class InitialDbAgain
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,27 @@ namespace ChinookDB.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("ChinookDB.models.AppUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppUsers");
+                });
 
             modelBuilder.Entity("ChinookDB.models.Customer", b =>
                 {
@@ -72,7 +93,25 @@ namespace ChinookDB.Migrations
 
                     b.HasKey("InvoiceId");
 
+                    b.HasIndex("CustomerId");
+
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("ChinookDB.models.Invoice", b =>
+                {
+                    b.HasOne("ChinookDB.models.Customer", "Customers")
+                        .WithMany("Invoices")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customers");
+                });
+
+            modelBuilder.Entity("ChinookDB.models.Customer", b =>
+                {
+                    b.Navigation("Invoices");
                 });
 #pragma warning restore 612, 618
         }
