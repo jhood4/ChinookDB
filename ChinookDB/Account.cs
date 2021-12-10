@@ -77,6 +77,18 @@ namespace ChinookDB
                 case 5:
                     CreateInvoice();
                     break;
+                case 6:
+                    SelectInvoice();
+                    break;
+                case 7:
+                    SelectInvoiceWithCustomer();
+                    break;
+                case 8:
+                    SelectAllInvoices();
+                    break;
+                case 9:
+                    UpdateInvoice();
+                    break;
                 case 10:
                     Program.MainMenu();
                     break;
@@ -126,7 +138,7 @@ namespace ChinookDB
                 {
                     foreach(var cust in customers)
                     {
-                        Console.WriteLine($"Id: {cust.Id} | First name: {cust.FirstName} | Last name: {cust.LastName} | Country: {cust.Country} | Email: {cust.Email}");
+                        Console.WriteLine($"Id: {cust.Id} | First name: {cust.FirstName} | Last name: {cust.LastName}");
                     }
 
 
@@ -255,6 +267,138 @@ namespace ChinookDB
 
                     AdminScreen.Show();
                 }
+            }
+        }
+
+        public static void SelectInvoice()
+        {
+            Console.Clear();
+            using (var _context = new AppDbContext())
+            {
+                var invoices = _context.Invoices.ToList();
+                if (invoices.Count > 0)
+                {
+                    foreach (var inv in invoices)
+                    {
+                        Console.WriteLine($"Id: {inv.InvoiceId}");
+                    }
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the id of the invoice you would like to view");
+
+                    var invoiceId = Convert.ToInt32(Console.ReadLine());
+                    Invoice invoice = _context.Invoices.FirstOrDefault(x => x.InvoiceId == invoiceId);
+                    Console.WriteLine($"Invoice Id: {invoice.InvoiceId}");
+                    Console.WriteLine($"Invoice Date: {invoice.InvoiceDate}");
+                    Console.WriteLine($"Amount: ${invoice.Amount}");
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    Console.WriteLine("Press any key to return to the menu");
+                    var ch = Console.ReadKey().KeyChar;
+
+                    AdminScreen.Show();
+                }
+            }
+        }
+
+        public static void SelectInvoiceWithCustomer()
+        {
+            Console.Clear();
+            using (var _context = new AppDbContext())
+            {
+                var invoices = _context.Invoices.ToList();
+                if (invoices.Count > 0)
+                {
+                    foreach (var inv in invoices)
+                    {
+                        Console.WriteLine($"Id: {inv.InvoiceId}");
+                    }
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    Console.WriteLine("Please enter the id of the invoice to see what customer it was issued for.");
+
+                    var invoiceId = Convert.ToInt32(Console.ReadLine());
+                    Invoice invoice = _context.Invoices.Where(x=> x.InvoiceId == invoiceId).Include("Customers").FirstOrDefault();
+                    Console.WriteLine("Invoice Details");
+                    Console.WriteLine($"Invoice Id: {invoice.InvoiceId}");
+                    Console.WriteLine($"Invoice Date: {invoice.InvoiceDate}");
+                    Console.WriteLine($"Amount: ${invoice.Amount}");
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    Console.WriteLine("Customer Details");
+                    Console.WriteLine($"Customer name: {invoice.Customers.FirstName} {invoice.Customers.LastName}");
+                    Console.WriteLine($"Country: {invoice.Customers.Country}");
+                    Console.WriteLine($"Email: {invoice.Customers.Email}");
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    Console.WriteLine("Press any key to return to the menu");
+                    var ch = Console.ReadKey().KeyChar;
+
+                    AdminScreen.Show();
+                }
+            }
+        }
+
+        public static void SelectAllInvoices()
+        {
+            using(var _context = new AppDbContext())
+            {
+                Console.Clear();
+                IList<Invoice> invoices = _context.Invoices.ToList();
+                _context.Dispose(); //not sure if you need this or not, the using should dispose it automatically i would think but i'm not positive
+                foreach (var invoice in invoices)
+                {
+                    Console.WriteLine($"Id: {invoice.InvoiceId}");
+                    Console.WriteLine($"Invoice Date {invoice.InvoiceDate}");
+                    Console.WriteLine($"Amount: ${invoice.Amount}");
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+                }
+                Console.WriteLine("Press any key to return to the menu");
+                var ch = Console.ReadKey().KeyChar;
+
+                AdminScreen.Show();
+            }
+        }
+
+        public static void UpdateInvoice()
+        {
+            Console.Clear();
+            using (var _context = new AppDbContext())
+            {
+                var invoices = _context.Invoices.ToList();
+                if (invoices.Count > 0)
+                {
+                    foreach (var inv in invoices)
+                    {
+                        Console.WriteLine($"Id: {inv.InvoiceId} | Invoice Date: {inv.InvoiceDate} | Amount: ${inv.Amount}");
+                    }
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the id of the invoice you would like to update");
+                    var invoiceId = Convert.ToInt32(Console.ReadLine());
+                    Invoice invoice = _context.Invoices.FirstOrDefault(x => x.InvoiceId == invoiceId);
+                    Console.WriteLine("Enter the Amount");
+                    invoice.Amount = Convert.ToDecimal(Console.ReadLine());
+                    
+
+                    _context.Invoices.Update(invoice);
+                    _context.SaveChanges();
+
+                    AdminScreen.Show();
+                }
+
             }
         }
     }
