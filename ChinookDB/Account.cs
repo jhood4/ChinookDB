@@ -7,71 +7,7 @@ namespace ChinookDB
 {
     public class Account
     {
-        public string Name { get; set; } // auto-implemented property
-        public string UserName { get; set; } // added by Garcia
-
-        public short Pin; // added by Garcia 
-
-        // Account constructor that receives two parameters  
-        public Account(string accountName, string accountUserName, short accountPin)
-        {
-            Name = accountName;
-            UserName = accountUserName; // added by Garcia
-            Pin = accountPin;
-        }
-
-        // Create a private menu for the admin to use
-
-        public static void menu()
-        {
-            Console.Clear();
-            LoginScreen.database();
-            Console.WriteLine(" What do you wish to do? ");
-            Console.WriteLine("---------------------------");
-            Console.WriteLine(" (1) Edit Customer Tables");
-            Console.WriteLine(" (2) Edit Invoice Tables");
-            Console.WriteLine(" (3) Exit");
-            Console.WriteLine("---------------------------");
-            Console.WriteLine("Choose an Option from the menu");
-        }
-
-
-        internal static void Show()
-        {
-            Console.WriteLine($"Welcome User"); // welcome string
-            Console.WriteLine(" ");
-            Console.WriteLine(" Please choose an option");
-            Account.menu();
-            var buttonChar = Console.ReadKey().KeyChar;
-
-            if (buttonChar == '1') // Edits Customer table
-            {
-                editCtable();
-
-            }
-            else if (buttonChar == '2') // Edits Invoice Table
-            {
-                EditItable();
-
-            }
-            else if (buttonChar == '3') // Exit
-            {
-                System.Environment.Exit(-1);
-            }
-
-
-        }
-        private static void EditItable()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static void editCtable()
-        {
-            throw new NotImplementedException();
-        }
-
-
+      
     }
     // Login Screen?
     internal class LoginScreen
@@ -102,33 +38,6 @@ namespace ChinookDB
                 AdminScreen.Show();
             }
         }
-
-
-        // used once for main screen
-        internal static void database()
-        {
-            Console.WriteLine("         ---------------------------------------");
-            Console.WriteLine("         | Welcome to Garcia's Database System |");
-            Console.WriteLine("         ---------------------------------------");
-            Console.WriteLine(" ");
-            Console.WriteLine($"Welcome please choose an action"); // Adds Welcome to main Screen
-            Console.WriteLine(" ");
-
-        }
-        public static void Database()
-        {
-            Console.WriteLine("         ---------------------------------------");
-            Console.WriteLine("         | Welcome to Garcia's Database System |");
-            Console.WriteLine("         ---------------------------------------");
-            Console.WriteLine(" ");
-            Console.WriteLine($"Welcome please follow the instructions Below"); // Adds Welcome to main Screen
-            Console.WriteLine(" ");
-        }
-
-        internal void Show(object list)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public class AdminScreen
@@ -143,10 +52,10 @@ namespace ChinookDB
             Console.WriteLine("3. Select a customer with invoices");
             Console.WriteLine("4. Update a customer");
             Console.WriteLine("5. Create a new invoice");
-            Console.WriteLine("6. Update a invoice");
-            Console.WriteLine("7. Select an invoice");
-            Console.WriteLine("8. Select a invoice with customer details");
-            Console.WriteLine("9. Select all invoice");
+            Console.WriteLine("6. Select an invoice");
+            Console.WriteLine("7. Select a invoice with customer details");
+            Console.WriteLine("8. Select all invoice");
+            Console.WriteLine("9. Update a invoice");
             Console.WriteLine("10. Main Menu");
             Console.WriteLine("11. Exit");
             Console.WriteLine("Enter Your Choice:");
@@ -164,6 +73,9 @@ namespace ChinookDB
                     break;
                 case 4:
                     UpdateCustomer();
+                    break;
+                case 5:
+                    CreateInvoice();
                     break;
                 case 10:
                     Program.MainMenu();
@@ -220,7 +132,7 @@ namespace ChinookDB
 
                     Console.WriteLine();
                     Console.WriteLine();
-                    Console.WriteLine("Please enter the id of the user you would like to view");
+                    Console.WriteLine("Please enter the id of the customer you would like to view");
                     var userId = Convert.ToInt32(Console.ReadLine());
                     Customer customer = _context.Customers.FirstOrDefault(x => x.Id == userId);
                     Console.WriteLine($"First name: {customer.FirstName}");
@@ -254,7 +166,7 @@ namespace ChinookDB
 
                     Console.WriteLine();
                     Console.WriteLine();
-                    Console.WriteLine("Please enter the id of the user you would like to view");
+                    Console.WriteLine("Please enter the id of the customer you would like to view");
                     var userId = Convert.ToInt32(Console.ReadLine());
                     var customer = _context.Customers.Where(x => x.Id == userId).Include("Invoices").FirstOrDefault();
                     Console.WriteLine("Customer Details");
@@ -296,7 +208,7 @@ namespace ChinookDB
 
                     Console.WriteLine();
                     Console.WriteLine();
-                    Console.WriteLine("Please enter the id of the user you would like to update");
+                    Console.WriteLine("Please enter the id of the customer you would like to update");
                     var userId = Convert.ToInt32(Console.ReadLine());
                     Customer customer = _context.Customers.FirstOrDefault(x => x.Id == userId);
                     Console.WriteLine("Enter the customer First Name");
@@ -317,75 +229,32 @@ namespace ChinookDB
             }
         }
 
-        public static void ShowCustomer()
+        public static void CreateInvoice()
         {
-
-        }
-    }
-
-    internal class Accountadmin
-    {
-        public object Name { get; private set; }
-
-        public void Show(List<Account> list)
-        {
-            Console.Clear();
-            LoginScreen.database();
-            Console.WriteLine("Welcome admin"); // welcome string
-            Console.WriteLine(" ");
-            Account.menu(); // created private method for menu
-            var buttonChar = Console.ReadKey().KeyChar;
-
-            if (buttonChar == '1')
+            using(var _context = new AppDbContext())
             {
+                var customers = _context.Customers.ToList();
+                if (customers.Count > 0)
+                {
+                    foreach (var cust in customers)
+                    {
+                        Console.WriteLine($"Id: {cust.Id} | First name: {cust.FirstName} | Last name: {cust.LastName}");
+                    }
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the id of the customer you would like create an invoice for");
+                    Invoice invoice = new Invoice();
+                    var userId = Convert.ToInt32(Console.ReadLine());
+                    invoice.CustomerId = userId;
+                    Console.WriteLine("Enter the invoice amount");
+                    invoice.Amount = Convert.ToDecimal(Console.ReadLine());
+                    invoice.InvoiceDate = DateTime.Now;
 
-                Console.WriteLine(" ");
+                    _context.Invoices.Add(invoice);
+                    _context.SaveChanges();
 
-
-            }
-            else if (buttonChar == '2') // 
-
-            {
-                Console.WriteLine("");
-            }
-            else if (buttonChar == '3')
-
-            {
-                System.Environment.Exit(-1);
-            }
-        }
-    }
-
-    class AccountTest
-    {
-
-
-        static void loss()
-        {
-            // displays parameters of account name, user, and pin
-            Account AdminAccount = new Account("Admin","adm1", 0001);
-            Account account1 = new Account("User","Guest", 1234);
-
-         // type parameter
-            var list = new List<Account> { AdminAccount, account1};
-
-            // creating variable use var to assign a value
-            // var creates variable, name infront or var states the name of the variable which then the = assigns the right side into variable
-            // new creates an instance of a type name infront of new grabs the func. of a class and applys it to the variable.
-            var screen = new Database(); // Makes Variable Screen
-            screen.Show(list); // Calls variable to show welcome Screen
-
-        }
-
-        private class Database
-        {
-            public Database()
-            {
-            }
-
-            internal void Show(List<Account> list)
-            {
-                throw new NotImplementedException();
+                    AdminScreen.Show();
+                }
             }
         }
     }
